@@ -1,4 +1,19 @@
-FROM osrf/ros:kinetic-desktop-full
+FROM nvidia/cudagl:9.2-runtime-ubuntu16.04
+
+ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
+RUN apt update && apt install -y lsb-release
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN apt update
+RUN apt install -y ros-kinetic-desktop-full
+
+RUN apt install -y python-rosdep python-rosinstall
+RUN rosdep init
+RUN rosdep update
+RUN echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
+RUN bash -c "source ~/.bashrc"
 
 RUN apt-get update
 RUN apt-get install -y tmux
